@@ -12,9 +12,9 @@ POSTGRES_DB = env("POSTGRES_DB")
 DB_HOST = env("DB_HOST")
 DB_PORT = env("DB_PORT")
 
-PG_DSN = f"postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{DB_HOST}:{DB_PORT}/{POSTGRES_DB}"
+DSN = f"postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{DB_HOST}:{DB_PORT}/{POSTGRES_DB}"
 
-engine = create_async_engine(PG_DSN)
+engine = create_async_engine(DSN)
 Session = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
 
 Base = declarative_base()
