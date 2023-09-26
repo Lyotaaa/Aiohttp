@@ -9,7 +9,8 @@ from validate import (
     CreateAds,
     UpdateAds,
 )
-from models import Session, OwnerModel, AdsModel
+from config_db import Session
+from models import OwnerModel, AdsModel
 from sqlalchemy.exc import IntegrityError
 
 
