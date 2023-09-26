@@ -1,6 +1,6 @@
 django_environ==0.10.0
 environ==1.0
 Flask==2.3.3
-pydantic==2.3.0
+pydantic==2.4.0
 Requests==2.31.0
 SQLAlchemy==2.0.20
