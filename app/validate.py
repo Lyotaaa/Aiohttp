@@ -4,43 +4,42 @@ from auxiliary_functions import get_http_error
 from aiohttp import web
 
 
-def validate(json_data, model_class):
+def validate(json_data: dict, model_class):
     try:
         model = model_class(**json_data)
         return model.dict(exclude_none=True)
     except ValidationError as err:
-        raise get_http_error(web.HTTPBadRequest, err.errors()())
+        raise get_http_error(web.HTTPBadRequest, err.errors())
 
 
-class CreateOwner(BaseModel):
+class CreateUser(BaseModel):
     """Валидация данных при создании пользователя"""
-
-    email: str
+    name: str
     password: str
 
-    @validator("email")
-    def validate_email(cls, value):
-        if "@" not in value:
-            raise ValueError("Invalid email")
+    @validator("name")
+    def validate_name(cls, value):
+        if len(value) > 10:
+            raise ValueError("Long name")
         return value
 
     @validator("password")
-    def val_password(cls, value):
+    def validate_password(cls, value):
         if len(value) < 3:
             raise ValueError("Short password")
         return value
 
 
-class UpdateOwner(BaseModel):
+class UpdateUser(BaseModel):
     """Валидация данных при обновлении пользователя"""
 
-    email: str
+    name: str
     password: str
 
-    @validator("email")
+    @validator("name")
     def validate_email(cls, value):
-        if "@" not in value:
-            raise ValueError("Invalid email")
+        if len(value) > 10:
+            raise ValueError("Long name")
         return value
 
     @validator("password")
@@ -55,7 +54,7 @@ class CreateAds(BaseModel):
 
     title: str
     description: str
-    owner_id: int
+    user_id: int
 
     @validator("title")
     def secure_title(cls, value):
@@ -75,7 +74,7 @@ class UpdateAds(BaseModel):
 
     title: str
     description: str
-    owner_id: int
+    user_id: int
 
     @validator("title")
     def secure_title(cls, value):

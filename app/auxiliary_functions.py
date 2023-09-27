@@ -1,15 +1,15 @@
 import json
 from hashlib import md5
 from aiohttp import web
-from app.config_db import engine, Base, Session
-from app.models import User, Ads
+from config_db import engine, Base, Session
+from models import User, Ads
 from sqlalchemy.exc import IntegrityError
 
 
 async def context_orm(app: web.Application):
     print("START")
     async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.creat_all)
+        await conn.run_sync(Base.metadata.create_all)
     yield
     await engine.despose()
     print("STOP")
@@ -32,9 +32,8 @@ def hash_password(password: str):
 def get_http_error(error_class, description: str):
     return error_class(
         text=json.dumps(
-            {"status": "error", "description": description},
-            content_type="application/json",
-        )
+            {"status": "error", "description": description}),
+        content_type="application/json",
     )
 
 
@@ -53,8 +52,8 @@ async def get_ads(ads_id: int, session: Session):
 
 
 async def add_user(user: User, session: Session):
+    session.add(user)
     try:
-        session.add(user)
         await session.commit()
     except IntegrityError as er:
         raise get_http_error(web.HTTPConflict, "User already exists")

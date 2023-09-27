@@ -1,9 +1,9 @@
 from aiohttp import web
-from auxiliary_functions import hash_password, get_http_error, get_ads, get_user
+from auxiliary_functions import hash_password, get_http_error, get_ads, get_user, add_user
 from validate import (
     validate,
-    CreateOwner,
-    UpdateOwner,
+    CreateUser,
+    UpdateUser,
     CreateAds,
     UpdateAds,
 )
@@ -18,14 +18,36 @@ class UserView(web.View):
         return self.request["session"]
 
     @property
-    def owner_id(self):
-        return int(self.request.match_info["owner_id"])
+    def user_id(self):
+        return int(self.request.match_info["user_id"])
 
-    def get(self):
-        pass
+    async def get(self):
+        user = await get_user(self.user_id, self.session)
+        return web.json_response(
+            {
+                "id": user.id,
+                "name": user.name,
+                "creation_time": user.creation_time.isoformat(),
+            }
+        )
 
-    def post(self):
-        pass
+    async def post(self):
+        json_data = await self.request.json()
+        json_validated = validate(json_data, CreateUser)
+        user_password = json_validated.get("password")
+        hashed_password = hash_password(user_password)
+        json_validated["password"] = hashed_password
+        new_user = User(**json_validated)
+        user = await add_user(new_user, self.session)
+        return web.json_response(
+            {
+                "id": user.id,
+                "name": user.name,
+                "password": user.password,
+                "creation_time": user.creation_time.isoformat(),
+            }
+        )
+
 
     def patch(self, owner_id: int):
         pass

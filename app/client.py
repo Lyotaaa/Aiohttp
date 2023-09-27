@@ -1,82 +1,31 @@
-import requests
+import asyncio
+import aiohttp
+from pprint import pprint
 
-"""Создать пользователя"""
-# response = requests.post(
-#     "http://127.0.0.1:5000/owner/",
-#     json={
-#         "email": "@yandex.com",
-#         "password": "123",
-#     },
-# )
-# print(response.status_code)
-# print(response.text)
 
-"""Найти пользователя"""
-# response = requests.get("http://127.0.0.1:5000/owner/1", )
-# print(response.status_code)
-# print(response.text)
+async def post_user(name: str, password: str):
+    async with aiohttp.ClientSession() as session:
+        response = await session.post(
+            "http://127.0.0.1:8080/users/",
+            json={
+                "name": name,
+                "password": password,
+            },
+        )
+        json_data = await response.json()
+        print(response.status)
+        pprint(json_data)
 
-"""Обновить информацию"""
-# response = requests.patch("http://127.0.0.1:5000/owner/1",
-#                          json={
-#                              "email": "@yandex.net",
-#                              "password": "123",
-#                          })
-# print(response.status_code)
-# print(response.text)
-#
-# response = requests.get("http://127.0.0.1:5000/owner/1", )
-# print(response.status_code)
-# print(response.text)
+        ###
+async def get_user(id):
+    async with aiohttp.ClientSession() as session:
+        response = await session.get(
+            f"http://127.0.0.1:8080/users/{id}",
+        )
+        json_data = await response.json()
+        print(response.status)
+        pprint(json_data)
 
-"""Удалить пользователя"""
-# response = requests.delete("http://127.0.0.1:5000/owner/1")
-# print(response.status_code)
-# print(response.text)
-#
-# response = requests.get("http://127.0.0.1:5000/owner/1")
-# print(response.status_code)
-# print(response.text)
-
-"""Создать объявление"""
-# response = requests.post(
-#     "http://127.0.0.1:5000/ads/",
-#     json={
-#         "title": "Test",
-#         "description": "Check",
-#         "owner_id": 1,
-#     }
-# )
-#
-# print(response.status_code)
-# print(response.text)
-
-"""Найти объявление"""
-# response = requests.get("http://127.0.0.1:5000/ads/1")
-# print(response.status_code)
-# print(response.text)
-
-"""Обновить объявление"""
-# response = requests.patch(
-#     "http://127.0.0.1:5000/ads/3",
-#     json={
-#         "title": "title",
-#         "description": "description",
-#         "owner_id": 1,
-#     }
-# )
-# print(response.status_code)
-# print(response.text)
-# #
-# response = requests.get("http://127.0.0.1:5000/ads/3")
-# print(response.status_code)
-# print(response.text)
-
-"""Удалить объявление"""
-# response = requests.delete("http://127.0.0.1:5000/ads/1")
-# print(response.status_code)
-# print(response.text)
-#
-# response = requests.get("http://127.0.0.1:5000/ads/1")
-# print(response.status_code)
-# print(response.text)
+if __name__ == "__main__":
+    asyncio.run(post_user("35", "1234"))
+    # asyncio.run(get_user(1))
