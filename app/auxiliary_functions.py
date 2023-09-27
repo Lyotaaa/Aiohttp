@@ -52,12 +52,12 @@ async def get_ads(ads_id: int, session: Session):
 
 
 async def add_user(user: User, session: Session):
-    session.add(user)
     try:
+        session.add(user)
         await session.commit()
     except IntegrityError as er:
         raise get_http_error(web.HTTPConflict, "User already exists")
-
+    return user
 
 async def add_ads(ads: Ads, session: Session):
     try:
@@ -65,3 +65,4 @@ async def add_ads(ads: Ads, session: Session):
         await session.commit()
     except IntegrityError as er:
         raise get_http_error(web.HTTPConflict, "Ads already exists")
+    return ads

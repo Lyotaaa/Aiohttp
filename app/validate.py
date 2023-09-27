@@ -20,13 +20,15 @@ class CreateUser(BaseModel):
     @validator("name")
     def validate_name(cls, value):
         if len(value) > 10:
-            raise ValueError("Long name")
+            raise get_http_error(web.HTTPBadRequest, "Long name")
+            #raise ValueError("Long name")
         return value
 
     @validator("password")
     def validate_password(cls, value):
         if len(value) < 3:
-            raise ValueError("Short password")
+            raise get_http_error(web.HTTPBadRequest, "Short password")
+            #raise ValueError("Short password")
         return value
 
 

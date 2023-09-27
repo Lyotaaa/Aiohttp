@@ -27,5 +27,6 @@ async def get_user(id):
         pprint(json_data)
 
 if __name__ == "__main__":
-    asyncio.run(post_user("35", "1234"))
-    # asyncio.run(get_user(1))
+    #asyncio.run(post_user("10", "1234"))
+    #asyncio.run(get_user(1))
+    pass
