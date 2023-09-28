@@ -1,5 +1,5 @@
 from pydantic import BaseModel, validator, ValidationError
-from typing import Type, Optional
+from typing import Optional
 from auxiliary_functions import get_http_error
 from aiohttp import web
 
@@ -62,33 +62,39 @@ class CreateAds(BaseModel):
     user_id: int
 
     @validator("title")
-    def secure_title(cls, value):
-        if 20 < len(value):
-            raise ValueError("Long title")
+    def validate_title(cls, value):
+        if 10 < len(value):
+            raise get_http_error(web.HTTPBadRequest, "Long title")
+            # raise ValueError("Long title")
         return value
 
     @validator("description")
-    def secure_description(cls, value):
-        if len(value) > 30:
-            raise ValueError("Long description")
+    def validate_description(cls, value):
+        if len(value) > 15:
+            raise get_http_error(web.HTTPBadRequest, "Long description")
+            # raise ValueError("Long description")
         return value
 
 
 class UpdateAds(BaseModel):
     """Валидация данных при обновлении объявления"""
 
-    title: str
-    description: str
+    title: Optional[str] = None
+    description: Optional[str] = None
     user_id: int
 
     @validator("title")
-    def secure_title(cls, value):
-        if 20 < len(value):
-            raise ValueError("Long title")
+    def validate_title(cls, value):
+        if value is not None:
+            if 10 < len(value):
+                raise get_http_error(web.HTTPBadRequest, "Long title")
+            # raise ValueError("Long title")
         return value
 
     @validator("description")
-    def secure_description(cls, value):
-        if len(value) > 30:
-            raise ValueError("Long description")
+    def validate_description(cls, value):
+        if value is not None:
+            if len(value) > 15:
+                raise get_http_error(web.HTTPBadRequest, "Long description")
+            # raise ValueError("Long description")
         return value

@@ -1,5 +1,5 @@
 from aiohttp import web
-from auxiliary_functions import hash_password, get_ads, get_user, add_user
+from auxiliary_functions import hash_password, get_ads, get_user, add_user, add_ads
 from validate import (
     validate,
     CreateUser,
@@ -19,28 +19,28 @@ class UserView(web.View):
     def user_id(self):
         return int(self.request.match_info["user_id"])
 
+    async def post(self):
+        json_data = await self.request.json()
+        json_validated = validate(json_data, CreateUser)
+        json_validated["password"] = hash_password(json_validated.get("password"))
+        new_user = User(**json_validated)
+        user = await add_user(new_user, self.session)
+        print(user)
+        return web.json_response(
+            {
+                "id": user.id,
+                "name": user.name,
+                "password": user.password,
+                "creation_time": user.creation_time.isoformat(),
+            }
+        )
+
     async def get(self):
         user = await get_user(self.user_id, self.session)
         return web.json_response(
             {
                 "id": user.id,
                 "name": user.name,
-                "creation_time": user.creation_time.isoformat(),
-            }
-        )
-
-    async def post(self):
-        json_data = await self.request.json()
-        json_validated = validate(json_data, CreateUser)
-        user_password = hash_password(json_validated.get("password"))
-        json_validated["password"] = user_password
-        new_user = User(**json_validated)
-        user = await add_user(new_user, self.session)
-        return web.json_response(
-            {
-                "id": user.id,
-                "name": user.name,
-                "password": user.password,
                 "creation_time": user.creation_time.isoformat(),
             }
         )
@@ -83,14 +83,56 @@ class AdsView(web.View):
     def ads_id(self):
         return int(self.request.match_info["ads_id"])
 
-    def get(self):
-        pass
+    async def post(self):
+        json_data = await self.request.json()
+        json_validated = validate(json_data, CreateAds)
+        new_ads = Ads(**json_validated)
+        ads = await add_ads(new_ads, self.session)
+        return web.json_response(
+            {
+                "id": ads.id,
+                "user_id": ads.user_id,
+                "title": ads.title,
+                "description": ads.description,
+                "creation_time": ads.creation_time.isoformat(),
+            }
+        )
 
-    def post(self):
-        pass
+    async def get(self):
+        ads = await get_ads(self.ads_id, self.session)
+        return web.json_response(
+            {
+                "id": ads.id,
+                "user_id": ads.user_id,
+                "title": ads.title,
+                "description": ads.description,
+                "creation_time": ads.creation_time.isoformat(),
+            }
+        )
 
-    def patch(self, ads_id: int):
-        pass
+    async def patch(self):
+        json_data = await self.request.json()
+        json_validated = validate(json_data, UpdateAds)
+        update_ads = await get_ads(self.ads_id, self.session)
+        for field, value in json_validated.items():
+            setattr(update_ads, field, value)
+        ads = await add_ads(update_ads, self.session)
+        return web.json_response(
+            {
+                "id": ads.id,
+                "user_id": ads.user_id,
+                "title": ads.title,
+                "description": ads.description,
+                "creation_time": ads.creation_time.isoformat(),
+            }
+        )
 
-    def delete(self, ads_id: int):
-        pass
+    async def delete(self):
+        ads = await get_ads(self.ads_id, self.session)
+        await self.session.delete(ads)
+        await self.session.commit()
+        return web.json_response(
+            {
+                "Status": "Successfully",
+            }
+        )

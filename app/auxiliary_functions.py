@@ -54,7 +54,7 @@ async def add_user(user: User, session: Session):
     try:
         session.add(user)
         await session.commit()
-    except IntegrityError as er:
+    except IntegrityError:
         raise get_http_error(web.HTTPConflict, "User already exists")
     return user
 
@@ -63,6 +63,6 @@ async def add_ads(ads: Ads, session: Session):
     try:
         session.add(ads)
         await session.commit()
-    except IntegrityError as er:
-        raise get_http_error(web.HTTPConflict, "Ads already exists")
+    except IntegrityError:
+        raise get_http_error(web.HTTPConflict, "There is no such user")
     return ads
