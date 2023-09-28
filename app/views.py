@@ -63,8 +63,15 @@ class UserView(web.View):
             }
         )
 
-    def delete(self, owner_id: int):
-        pass
+    async def delete(self):
+        user = await get_user(self.user_id, self.session)
+        await self.session.delete(user)
+        await self.session.commit()
+        return web.json_response(
+            {
+                "Status": "Successfully",
+            }
+        )
 
 
 class AdsView(web.View):

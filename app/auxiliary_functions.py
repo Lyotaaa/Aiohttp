@@ -31,8 +31,7 @@ def hash_password(password: str):
 
 def get_http_error(error_class, description: str):
     return error_class(
-        text=json.dumps(
-            {"status": "error", "description": description}),
+        text=json.dumps({"status": "error", "description": description}),
         content_type="application/json",
     )
 
@@ -40,7 +39,7 @@ def get_http_error(error_class, description: str):
 async def get_user(user_id: int, session: Session):
     user = await session.get(User, user_id)
     if user is None:
-        raise get_http_error(web.HTTPNotFound, "user not found")
+        raise get_http_error(web.HTTPNotFound, "User not found")
     return user
 
 
@@ -58,6 +57,7 @@ async def add_user(user: User, session: Session):
     except IntegrityError as er:
         raise get_http_error(web.HTTPConflict, "User already exists")
     return user
+
 
 async def add_ads(ads: Ads, session: Session):
     try:

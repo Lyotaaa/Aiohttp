@@ -14,6 +14,7 @@ def validate(json_data: dict, model_class):
 
 class CreateUser(BaseModel):
     """Валидация данных при создании пользователя"""
+
     name: str
     password: str
 
@@ -21,22 +22,22 @@ class CreateUser(BaseModel):
     def validate_name(cls, value):
         if len(value) > 10:
             raise get_http_error(web.HTTPBadRequest, "Long name")
-            #raise ValueError("Long name")
+            # raise ValueError("Long name")
         return value
 
     @validator("password")
     def validate_password(cls, value):
         if len(value) < 2:
             raise get_http_error(web.HTTPBadRequest, "Short password")
-            #raise ValueError("Short password")
+            # raise ValueError("Short password")
         return value
 
 
 class UpdateUser(BaseModel):
     """Валидация данных при обновлении пользователя"""
 
-    name: Optional[str]= None
-    password: Optional[str]= None
+    name: Optional[str] = None
+    password: Optional[str] = None
 
     @validator("name")
     def validate_name(cls, value):
