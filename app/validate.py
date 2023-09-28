@@ -26,7 +26,7 @@ class CreateUser(BaseModel):
 
     @validator("password")
     def validate_password(cls, value):
-        if len(value) < 3:
+        if len(value) < 2:
             raise get_http_error(web.HTTPBadRequest, "Short password")
             #raise ValueError("Short password")
         return value
@@ -35,19 +35,21 @@ class CreateUser(BaseModel):
 class UpdateUser(BaseModel):
     """Валидация данных при обновлении пользователя"""
 
-    name: str
-    password: str
+    name: Optional[str]= None
+    password: Optional[str]= None
 
     @validator("name")
-    def validate_email(cls, value):
-        if len(value) > 10:
-            raise ValueError("Long name")
+    def validate_name(cls, value):
+        if value is not None:
+            if len(value) > 10:
+                raise get_http_error(web.HTTPBadRequest, "Long name")
         return value
 
     @validator("password")
     def validate_password(cls, value):
-        if len(value) < 3:
-            raise ValueError("Short password")
+        if value is not None:
+            if len(value) < 2:
+                raise get_http_error(web.HTTPBadRequest, "Short password")
         return value
 
 

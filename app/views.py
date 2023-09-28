@@ -1,5 +1,5 @@
 from aiohttp import web
-from auxiliary_functions import hash_password, get_http_error, get_ads, get_user, add_user
+from auxiliary_functions import hash_password, get_ads, get_user, add_user
 from validate import (
     validate,
     CreateUser,
@@ -7,9 +7,7 @@ from validate import (
     CreateAds,
     UpdateAds,
 )
-from config_db import Session
 from models import User, Ads
-import requests
 
 
 class UserView(web.View):
@@ -34,9 +32,8 @@ class UserView(web.View):
     async def post(self):
         json_data = await self.request.json()
         json_validated = validate(json_data, CreateUser)
-        user_password = json_validated.get("password")
-        hashed_password = hash_password(user_password)
-        json_validated["password"] = hashed_password
+        user_password = hash_password(json_validated.get("password"))
+        json_validated["password"] = user_password
         new_user = User(**json_validated)
         user = await add_user(new_user, self.session)
         return web.json_response(
@@ -48,9 +45,23 @@ class UserView(web.View):
             }
         )
 
-
-    def patch(self, owner_id: int):
-        pass
+    async def patch(self):
+        json_data = await self.request.json()
+        json_validated = validate(json_data, UpdateUser)
+        if "password" in json_validated:
+            json_validated["password"] = hash_password(json_validated.get("password"))
+        update_user = await get_user(self.user_id, self.session)
+        for field, value in json_validated.items():
+            setattr(update_user, field, value)
+        user = await add_user(update_user, self.session)
+        return web.json_response(
+            {
+                "id": user.id,
+                "name": user.name,
+                "password": user.password,
+                "creation_time": user.creation_time.isoformat(),
+            }
+        )
 
     def delete(self, owner_id: int):
         pass
