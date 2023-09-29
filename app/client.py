@@ -130,11 +130,15 @@ async def delete_ads(ads_id):
 
 
 if __name__ == "__main__":
-    asyncio.run(post_user("new_user", "qwerty"))
+    """Проверка пользователя"""
+    asyncio.run(post_user("User", "qwerty"))
     asyncio.run(get_user(1))
     asyncio.run(patch_user(1, name="New user", password="12345"))  #
     asyncio.run(delete_user(1))
-    # asyncio.run(post_ads("Test", "v.2", "1"))
+    """Проверка объявления"""
+    # asyncio.run(post_user("User", "qwerty"))
+    # asyncio.run(post_ads("Title", "description", "1"))
     # asyncio.run(get_ads(1))
-    # asyncio.run(patch_ads(ads_id=1, user_id=5, title=None, description=None))
-    # asyncio.run(delete_ads(3))
+    # asyncio.run(patch_ads(ads_id=1, user_id=1, title="New_Title", description="New_Description"))
+    # asyncio.run(delete_ads(1))
+    # asyncio.run(delete_user(1))
