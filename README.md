@@ -23,11 +23,11 @@ template/Scripts/Activate
 ```
 pip install -r requirements.txt
 ```
-## Запустить файл docker compose командой. Будет создана БД.
+## Запустить файл docker compose командой. Для создания БД.
 ```
 docker compose up -d
 ```
-## Запустите файл server.py
+## Запустите файл server.py.
 [server.py](./app/server.py)
 
 ## Для отпарвки запросов используйте файл client.py
